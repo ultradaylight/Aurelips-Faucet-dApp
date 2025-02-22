@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelips Faucet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 20px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Get Free Aurelips Tokens With This Faucet</h1>
+    <div id="walletInfo">
+        <button id="connectWallet">Connect Wallet</button>
+        <p>Wallet: <span id="accountAddress">Not connected</span></p>
+        <p>HEX Balance: <span id="hexBalance">0</span></p>
+        <p>Faucet ALIPS Balance: <span id="faucetBalance">0</span></p>
+        <p>Claim Status: <span id="claimStatus">Checking...</span></p>
+    </div>
+    <button id="claimButton" disabled>Claim 1 ALIPS</button>
+    <div id="status"></div>
+
+    <!-- Use the reliable jsDelivr CDN for ethers.js v6 -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

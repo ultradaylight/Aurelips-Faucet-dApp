@@ -1,0 +1,15 @@
+{
+  "name": "aurelips-faucet-dapp",
+  "version": "1.0.0",
+  "description": "A decentralized faucet DApp for claiming Aurelips tokens on PulseChain",
+  "main": "app.js",
+  "scripts": {
+    "start": "live-server --port=8080"
+  },
+  "keywords": ["dapp", "pulsechain", "aurelips", "hex", "blockchain"],
+  "author": "UltraDayLight",
+  "license": "MIT",
+  "dependencies": {
+    "live-server": "^1.2.2"
+  }
+}
