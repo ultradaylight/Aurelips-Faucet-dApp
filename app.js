@@ -1,6 +1,6 @@
-const AURELIPS_FAUCET_ADDRESS = "0x4330D40D7d8b394224D5382FB055e3b9018bb312";
+const AURELIPS_FAUCET_ADDRESS = "0xB621b1f27549aBA8dBc8Aa39a4F2345C23B632Ed";
 const AURELIPS_TOKEN_ADDRESS = "0x9A880e35fcbb1A080762A0Fe117105Ad5715B897";
-const HEX_TOKEN_ADDRESS = "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39";
+const HEX_TOKEN_ADDRESS = "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39"; 
 
 const FAUCET_ABI = [
     "function claimTokens() external",
@@ -20,7 +20,7 @@ let faucetContract;
 let hexContract;
 let aurelipsContract;
 
-const REQUIRED_HEX_BALANCE = BigInt("5000000000000000000000"); // 5000 HEX in wei
+const REQUIRED_HEX_BALANCE = BigInt("500000000000"); // 5000 HEX with 8 decimals
 
 function initApp() {
     if (typeof ethers === 'undefined') {
@@ -29,25 +29,28 @@ function initApp() {
         return;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const connectButton = document.getElementById('connectWallet');
-        const claimButton = document.getElementById('claimButton');
-        const statusDiv = document.getElementById('status');
+    const connectButton = document.getElementById('connectWallet');
+    const claimButton = document.getElementById('claimButton');
+    const statusDiv = document.getElementById('status');
 
-        connectButton.addEventListener('click', connectMetaMask);
-        claimButton.addEventListener('click', claimTokens);
+    if (!connectButton || !claimButton || !statusDiv) {
+        console.error("DOM elements not found.");
+        return;
+    }
 
-        if (!window.ethereum) {
-            statusDiv.innerText = "Please install a compatible Ethereum wallet (e.g., MetaMask, Trust Wallet) to use this DApp.";
-            return;
-        }
+    connectButton.addEventListener('click', connectMetaMask);
+    claimButton.addEventListener('click', claimTokens);
 
-        provider = new ethers.BrowserProvider(window.ethereum);
-        checkForExistingConnection();
-    });
+    if (!window.ethereum) {
+        statusDiv.innerText = "Please install a compatible Ethereum wallet (e.g., MetaMask, Trust Wallet) to use this DApp.";
+        return;
+    }
+
+    provider = new ethers.BrowserProvider(window.ethereum);
+    checkForExistingConnection();
 }
 
-initApp();
+document.addEventListener('DOMContentLoaded', initApp);
 
 async function checkForExistingConnection() {
     try {
@@ -75,6 +78,8 @@ async function connectMetaMask() {
         signer = await provider.getSigner();
 
         await switchToPulseChain();
+        const chainId = await provider.getNetwork().then(net => net.chainId);
+        console.log("Connected to chain ID (hex):", `0x${chainId.toString(16)}`);
 
         faucetContract = new ethers.Contract(AURELIPS_FAUCET_ADDRESS, FAUCET_ABI, signer);
         hexContract = new ethers.Contract(HEX_TOKEN_ADDRESS, ERC20_ABI, signer);
@@ -83,6 +88,7 @@ async function connectMetaMask() {
         await updateUI();
     } catch (error) {
         statusDiv.innerText = `Error connecting to wallet: ${error.message}`;
+        console.error("Connect error:", error);
     }
 }
 
@@ -120,15 +126,26 @@ async function updateUI() {
 
     accountAddress.innerText = `${account.slice(0, 6)}...${account.slice(-4)}`;
 
-    const hexBalance = await hexContract.balanceOf(account);
-    const formattedHexBalance = Number(ethers.formatEther(hexBalance)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    hexBalanceSpan.innerText = formattedHexBalance;
+    let hexBalance;
+    try {
+        hexBalance = await hexContract.balanceOf(account);
+        console.log("Raw HEX balance (wei):", hexBalance.toString());
+        const formattedHexBalance = ethers.formatUnits(hexBalance, 8); // HEX has 8 decimals
+        console.log("Formatted HEX balance:", formattedHexBalance);
+        hexBalanceSpan.innerText = Number(formattedHexBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } catch (error) {
+        console.error("Error fetching HEX balance:", error);
+        hexBalanceSpan.innerText = "Error";
+        hexBalance = BigInt(0);
+    }
 
     const faucetBalance = await aurelipsContract.balanceOf(AURELIPS_FAUCET_ADDRESS);
     const formattedFaucetBalance = Number(ethers.formatEther(faucetBalance)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     faucetBalanceSpan.innerText = formattedFaucetBalance;
 
     const hasClaimed = await faucetContract.hasClaimed(account);
+    console.log("Has claimed:", hasClaimed);
+    console.log("HEX balance vs required:", hexBalance.toString(), "vs", REQUIRED_HEX_BALANCE.toString());
     claimStatusSpan.innerText = (!hasClaimed && hexBalance >= REQUIRED_HEX_BALANCE) ? "Eligible" : "Not Eligible";
 
     claimButton.disabled = hasClaimed || hexBalance < REQUIRED_HEX_BALANCE;
@@ -155,5 +172,7 @@ async function claimTokens() {
         await updateUI();
     } catch (error) {
         statusDiv.innerText = `Error: ${error.message}`;
+        console.error("Claim error:", error);
     }
 }
+
