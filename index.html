@@ -17,9 +17,16 @@
             margin: 5px;
             cursor: pointer;
         }
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
         #status {
             margin-top: 20px;
             word-wrap: break-word;
+        }
+        .balance-label {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -28,9 +35,9 @@
     <div id="walletInfo">
         <button id="connectWallet">Connect Wallet</button>
         <p>Wallet: <span id="accountAddress">Not connected</span></p>
-        <p>HEX Balance: <span id="hexBalance">0</span></p>
-        <p>Faucet ALIPS Balance: <span id="faucetBalance">0</span></p>
-        <p>Claim Status: <span id="claimStatus">Checking...</span></p>
+        <p><span class="balance-label">HEX Balance:</span> <span id="hexBalance">0</span> HEX</p>
+        <p><span class="balance-label">Faucet ALIPS Balance:</span> <span id="faucetBalance">0</span> ALIPS</p>
+        <p><span class="balance-label">Claim Status:</span> <span id="claimStatus">Checking...</span></p>
     </div>
     <button id="claimButton" disabled>Claim 1 ALIPS</button>
     <div id="status"></div>
