@@ -1,6 +1,6 @@
 # Aurelips Faucet DApp
 
-Claim free ALIPS tokens here: https://ipfs.io/ipfs/
+Claim free ALIPS tokens here: https://ipfs.io/ipfs/bafybeidyxonlpcmmooag6sxex2ef7lyiwkwj56zsndgs5maz4j32qgdu7e/
 
 A decentralized application (DApp) that allows users to claim 1 ALIPS token from a faucet on PulseChain, provided they hold at least 5,000 HEX tokens and haven’t claimed before. This DApp runs entirely in the browser, interacting with the PulseChain blockchain via a user’s wallet (e.g., MetaMask).
 
